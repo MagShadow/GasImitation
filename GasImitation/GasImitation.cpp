@@ -15,9 +15,9 @@ int main()
 	fout.open("fout.txt");
 	if (!fout.is_open()) { cerr << "ERROR!\n"; return 0;}*/
 
-	Space test(10);
+	Space test(100000);
 		
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		test.timePass(0.01);
 		cout << "Ek=" << test.Ek() << "  Eu=" << test.Eu() << "  E=" << test.Ek() + test.Eu() << endl;

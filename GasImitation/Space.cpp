@@ -50,14 +50,15 @@ Space::Space(int n)
 		t->num = temp;
 		nvec[t->x_()][t->y_()].push_front(t);
 	}
-
+	/*
 	using namespace std;
 	for (int i = 0; i < RANGE; ++i)
 	{
 		for (int j = 0; j < RANGE; ++j)
 			cout << setw(6) << nvec[i][j].size();
 		cout << endl;
-	}
+	}*/
+
 }
 
 
@@ -103,6 +104,16 @@ void Space::timePass(double dt)
 
 				
 				if ((*p)->f == ff) { ++p; continue; }
+				//受力不能只算邻近四个格子，还有本格和对角线格子
+				//本格
+				for (auto it : nvec[i][j])
+				{
+					if ((*p) == it) continue;
+					ax += fx((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
+					ay += fy((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
+				}
+
+				//相邻格
 				xx = i-1; yy = j; clr(xx, yy);
 				for (auto it : nvec[xx][yy])
 				{
@@ -128,6 +139,31 @@ void Space::timePass(double dt)
 					ay += fy((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
 				}
 
+				//对角格
+				xx = i - 1; yy = j - 1; clr(xx, yy);
+				for (auto it : nvec[xx][yy])
+				{
+					ax += fx((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
+					ay += fy((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
+				}
+				xx = i + 1; yy = j - 1; clr(xx, yy);
+				for (auto it : nvec[xx][yy])
+				{
+					ax += fx((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
+					ay += fy((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
+				}
+				xx = i - 1; yy = j + 1; clr(xx, yy);
+				for (auto it : nvec[xx][yy])
+				{
+					ax += fx((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
+					ay += fy((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
+				}
+				xx = i + 1; yy = j + 1; clr(xx, yy);
+				for (auto it : nvec[xx][yy])
+				{
+					ax += fx((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
+					ay += fy((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
+				}
 				(*p)->stepForward(ax, ay, dt);
 				(*p)->f = ff;
 				//++times;
@@ -136,7 +172,7 @@ void Space::timePass(double dt)
 					//nvec[(*p)->x_()][(*p)->y_()].push_back(*p);
 					//nvec[i][j].erase(p);
 					//沃日，原来问题果然在这，迭代器不能乱变，等会试试
-
+					
 					//cout << "No."<<(*p)->num<<" moved! (" << i << ',' << j << ")->(" << (int)(*p)->x_() << ',' << (int)(*p)->y_() << ')' << endl;
 					que.push_back(que_n);
 				}
@@ -164,13 +200,13 @@ void Space::timePass(double dt)
 			}
 		}
 	}
-	
+	/*
 	for (int i = 0; i < RANGE; ++i)
 	{
 		for (int j = 0; j < RANGE; ++j)
 			cout << setw(6) << nvec[i][j].size();
 		cout << endl;
-	}
+	}*/
 	//cout << "Total Count:" << times << " times.\n";
 }
 

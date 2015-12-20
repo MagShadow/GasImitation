@@ -10,8 +10,7 @@
 #include <iostream>
 #include <fstream>
 
-#define RANGE 5
-
+#define RANGE 200
 
 
 // TODO:  在此处引用程序需要的其他头文件
