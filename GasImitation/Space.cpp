@@ -1,3 +1,4 @@
+
 #include "Space.h"
 #include <iomanip>
 #include <cmath>
@@ -261,6 +262,6 @@ double Space::Eu()
 	}
 	return sum*0.5;
 }
-
+*/
 
 
