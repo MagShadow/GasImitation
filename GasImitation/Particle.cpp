@@ -16,6 +16,8 @@ Particle::Particle(double a, double b, double va, double vb)
 	y = b;
 	vx = va;
 	vy = vb;
+	//vxx = vx;
+	//vyy = vy;
 }
 
 Particle::~Particle()
@@ -33,7 +35,9 @@ void Particle::initialize()
 	double ceta = RNG() * 2 * Pi;
 	vx = v*cos(ceta);
 	vy = v*sin(ceta);
-	
+	//vxx = vx;
+	//vyy = vy;
+	//std::cout << vx << ' ' << vy << std::endl;
 	x = RNG()*RANGE;
 	y = RNG()*RANGE;
 	
@@ -50,16 +54,18 @@ void Particle::initialize(int Rx,int Ry)
 
 	double v = RNG();
 	double ceta = RNG() * 2 * Pi;
+	
 	vx = v*cos(ceta);
 	vy = v*sin(ceta);
-
+	//std::cout << vx << ' ' << vy << std::endl;
 	x = RNG()*Rx;
 	y = RNG()*Ry;
 
 	//std::cout << RNG.ss() << std::endl;
 	//这里存疑，究竟是如何工作的?
 }
-void Particle::stepForward(double ax, double ay, double dt)
+
+void Particle::stepForward(double dt)
 {
 	x = x + vx*dt + 0.5*ax*dt*dt;
 	y = y + vy*dt + 0.5*ay*dt*dt;
@@ -74,7 +80,23 @@ void Particle::stepForward(double ax, double ay, double dt)
 	//换为Runge-Kutta方法？
 }
 
-void Particle::stepForward(double dt)	//改用自己内部的加速度值
+void Particle::move(double dt)
+{
+	x = x + vx*dt;
+	y = y + vy*dt;
+	while (x < 0) x += RANGE;
+	while (y < 0) y += RANGE;
+	while (x >= RANGE) x -= RANGE;
+	while (y >= RANGE) y -= RANGE;
+}
+
+void Particle::veloMove(double dt)
+{
+	vx += ax*dt;
+	vy += ay*dt;
+}
+
+/*void Particle::stepForward(double dt)
 {
 	x = x + vx*dt + 0.5*ax*dt*dt;
 	y = y + vy*dt + 0.5*ay*dt*dt;
@@ -87,13 +109,13 @@ void Particle::stepForward(double dt)	//改用自己内部的加速度值
 	vy = vy + ay*dt;
 	//此处存疑，现在采用的是最简单的模拟算法；
 	//换为Runge-Kutta方法？
-}
+}*/
 
 double Particle::Eu(Particle t)
 {
 	double d = sqrt((t.x_() - x)*(t.x_() - x) + (t.y_() - y)*(t.y_() - y));
-	/*if (d > 1) return 0.0;
-	else*/
+	if (d > 1) return 0.0;
+	else
 		return (exp(-4 * d*d) - exp(-4));
 	
 }

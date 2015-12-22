@@ -15,12 +15,12 @@ int main()
 	fout.open("fout.txt");
 	if (!fout.is_open()) { cerr << "ERROR!\n"; return 0;}*/
 
-	Space test(100,true);
+	Space test(10000,true);
 		
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < 500; i++)
 	{
-		test.timePass(0.001);
-		if (i % 10 != 0) continue;
+		test.timePass(0.005);
+		if (i % 20 != 0) continue;
 		cout << "Ek=" << test.Ek() << "  Eu=" << test.Eu() << "  E=" << test.Ek() + test.Eu() << endl;
 		
 	}

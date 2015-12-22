@@ -26,13 +26,13 @@ return (y2 - y1)*K;
 double fx(double x1, double y1, double x2, double y2)
 {
 	double d(sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2)));
-	/*if (d > 1) return 0.0; else*/ return 8.0*exp(-4 * d*d)*(x1 - x2);
+	if (d > 1) return 0.0; else return 8.0*exp(-4 * d*d)*(x1 - x2);
 }
 
 double fy(double x1, double y1, double x2, double y2)
 {
 	double d(sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2)));
-	/*if (d > 1) return 0.0; else*/ return 8.0*exp(-4 * d*d)*(y1 - y2);
+	if (d > 1) return 0.0; else return 8.0*exp(-4 * d*d)*(y1 - y2);
 }
 
 Space::Space()
@@ -71,13 +71,13 @@ Space::Space(int n,bool d)
 		t->num = temp;
 		nvec[t->x_()][t->y_()].push_front(t);
 	}
-	using namespace std;
+	/*using namespace std;
 	for (int i = 0; i < RANGE; ++i)
 	{
 		for (int j = 0; j < RANGE; ++j)
 			cout << setw(6) << nvec[i][j].size();
 		cout << endl;
-	}
+	}*/
 }
 
 Space::~Space()
@@ -87,36 +87,82 @@ Space::~Space()
 void Space::timePass(double dt)
 {
 	//static int times = 0;
-
+	static bool TheFirstStep(false);
 	static int tt = -1;
 	tt += 1;
 
 	//某些黑科技，用以标记某一颗粒子有没有处理过
 	//cout << "Time:" << tt << endl;
-	int ff = -1;
-	for (int i = 0; i < RANGE; ++i)
-	{
-		for (int j = 0; j < RANGE; ++j)
-			if (!nvec[i][j].empty()) { ff = (*nvec[i][j].begin())->f; }
-		if (ff != -1) break;
+	
+
+	if (TheFirstStep) {
+		int ff = -1;
+		for (int i = 0; i < RANGE; ++i)
+		{
+			for (int j = 0; j < RANGE; ++j)
+				if (!nvec[i][j].empty()) { ff = (*nvec[i][j].begin())->f; }
+			if (ff != -1) break;
+		}
+		ff = abs(ff - 1);
+		for (int i = 0; i < RANGE; ++i)
+		{
+			for (int j = 0; j < RANGE; ++j)
+			{
+				auto p = nvec[i][j].begin();
+
+				//存储需要移动的点
+				vector<int> que;
+				int que_n = 0;
+
+				while (true)
+				{
+					if (p == nvec[i][j].end()) break;
+					//我也不知道为什么这里一定要这样写，但只有这样才能通过
+
+					if ((*p)->f == ff) { ++p; continue; }
+					(*p)->move(dt);
+					(*p)->f = ff;
+					if (((int)(*p)->x_() != i) || ((int)(*p)->y_() != j)) que.push_back(que_n);
+					else
+						++p;
+				}
+
+				p = nvec[i][j].begin();
+				int l = nvec[i][j].size();
+				int jj = 0;
+				for (int ii = 0; ii < l; ++ii)
+				{
+					if (jj >= que.size()) break;
+					if (ii == que[jj])
+					{
+						++jj;
+						//cout << "Actually (" << i << ',' << j << ")->(" << (int)(*p)->x_() << ',' << (int)(*p)->y_() << ')' << endl;
+						nvec[(*p)->x_()][(*p)->y_()].push_back(*p);
+						p = nvec[i][j].erase(p);
+
+					}
+					else
+						++p;
+				}
+			}
+		}
 	}
-	ff = abs(ff - 1);
 
-
+	if (!TheFirstStep) TheFirstStep = true;
 	//只设置加速度，现在先不移动
 	for (int i = 0; i < RANGE; ++i)
 	{
 		for (int j = 0; j < RANGE; ++j)
 		{
 			auto p = nvec[i][j].begin();
-			double ax = 0, ay = 0;
+			
 			int xx, yy;
 
 			while (true)
 			{
 				if (p == nvec[i][j].end()) break;	
 				//我也不知道为什么这里一定要这样写，但只有这样才能通过
-
+				double ax = 0, ay = 0;
 				//受力不能只算邻近四个格子，还有本格和对角线格子
 				//本格
 				for (auto it : nvec[i][j])
@@ -178,54 +224,14 @@ void Space::timePass(double dt)
 					ay += fy((*p)->x_(), (*p)->y_(), it->x_(), it->y_());
 				}
 				(*p)->setAcc(ax, ay);
+				(*p)->veloMove(dt);
 				++p;				
 			}
 		}
 	}
 
-	for (int i = 0; i < RANGE; ++i)
-	{
-		for (int j = 0; j < RANGE; ++j)
-		{
-			auto p = nvec[i][j].begin();
-
-			//存储需要移动的点
-			vector<int> que;
-			int que_n = 0;
-
-			while (true)
-			{
-				if (p == nvec[i][j].end()) break;
-				//我也不知道为什么这里一定要这样写，但只有这样才能通过
-
-				if ((*p)->f == ff) { ++p; continue; }
-				(*p)->stepForward(dt);
-				(*p)->f = ff;
-				if (((int)(*p)->x_() != i) || ((int)(*p)->y_() != j)) que.push_back(que_n);
-				else
-					++p;
-			}
-
-			p = nvec[i][j].begin();
-			int l = nvec[i][j].size();
-			int jj = 0;
-			for (int ii = 0; ii < l; ++ii)
-			{
-				if (jj >= que.size()) break;
-				if (ii == que[jj])
-				{
-					++jj;
-					//cout << "Actually (" << i << ',' << j << ")->(" << (int)(*p)->x_() << ',' << (int)(*p)->y_() << ')' << endl;
-					nvec[(*p)->x_()][(*p)->y_()].push_back(*p);
-					p = nvec[i][j].erase(p);
-
-				}
-				else
-					++p;
-			}
-		}
-	}
-	if (tt % 20 != 0) return;
+	
+	return;
 	for (int i = 0; i < RANGE; ++i)
 	{
 	for (int j = 0; j < RANGE; ++j)

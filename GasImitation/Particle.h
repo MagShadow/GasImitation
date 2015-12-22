@@ -10,11 +10,15 @@ public:
 
 	void initialize();
 	void initialize(int Rx,int Ry);
-	void stepForward(double, double, double);
+	//void stepForward(double, double, double);
 	void stepForward(double dt); //新版本，带有自己内部的加速度值
-	void setAcc(double a_x, double a_y) { ax = a_x; ay = a_y; }
+	//void stepForward2(double dt);
+	void setAcc(double a_x, double a_y) { /*ax_ = ax; ay_ = ay;*/ ax = a_x; ay = a_y; }
 
-	inline double Ek() const { return 0.5*(vx*vx + vy + vy); }
+	void move(double dt);
+	void veloMove(double dt);
+
+	inline double Ek() const { return 0.5*(vx*vx + vy*vy); }
 	double Eu(Particle t);
 
 	inline double x_() const { return x; }
@@ -29,6 +33,8 @@ public:
 private:
 	double x, y;
 	double vx, vy;
+	//double vxx, vyy;	//这存储半步以前的速度
 	double ax, ay;
+	//double ax_, ay_;
 };
 
