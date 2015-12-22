@@ -13,6 +13,7 @@ class Space
 public:
 	Space();
 	Space(int n);
+	Space(int n,bool d);
 	~Space();
 
 	void timePass(double dt);
