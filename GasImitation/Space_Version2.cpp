@@ -11,25 +11,14 @@ inline void clr(int &x, int &y)
 	while (x >= RANGE) x -= RANGE;
 	while (y >= RANGE) y -= RANGE;
 }
-//当前的力的模型采用弹簧力,作为测试
-/*double fx(double x1, double y1, double x2, double y2)
-{
-return (x2 - x1)*K;
-}
 
-double fy(double x1, double y1, double x2, double y2)
-{
-return (y2 - y1)*K;
-}*/
-
-//利用作用势计算真实力
-double fx(double x1, double y1, double x2, double y2)
+inline double fx(double x1, double y1, double x2, double y2)
 {
 	double d(sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2)));
 	if (d > 1) return 0.0; else return 8.0*exp(-4 * d*d)*(x1 - x2);
 }
 
-double fy(double x1, double y1, double x2, double y2)
+inline double fy(double x1, double y1, double x2, double y2)
 {
 	double d(sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2)));
 	if (d > 1) return 0.0; else return 8.0*exp(-4 * d*d)*(y1 - y2);
@@ -47,18 +36,8 @@ Space::Space(int n)
 	{
 		Particle* t = new Particle;
 		t->initialize();
-		t->num = temp;
 		nvec[t->x_()][t->y_()].push_front(t);
 	}
-	/*
-	using namespace std;
-	for (int i = 0; i < RANGE; ++i)
-	{
-	for (int j = 0; j < RANGE; ++j)
-	cout << setw(6) << nvec[i][j].size();
-	cout << endl;
-	}*/
-
 }
 Space::Space(int n,bool d)
 {
@@ -68,16 +47,8 @@ Space::Space(int n,bool d)
 	{
 		Particle* t = new Particle;
 		t->initialize(RANGE / 2, RANGE);
-		t->num = temp;
 		nvec[t->x_()][t->y_()].push_front(t);
 	}
-	/*using namespace std;
-	for (int i = 0; i < RANGE; ++i)
-	{
-		for (int j = 0; j < RANGE; ++j)
-			cout << setw(6) << nvec[i][j].size();
-		cout << endl;
-	}*/
 }
 
 Space::~Space()
@@ -86,16 +57,11 @@ Space::~Space()
 
 void Space::timePass(double dt)
 {
-	//static int times = 0;
 	static bool TheFirstStep(false);
-	static int tt = -1;
-	tt += 1;
-
+		
 	//某些黑科技，用以标记某一颗粒子有没有处理过
-	//cout << "Time:" << tt << endl;
-	
-
-	if (TheFirstStep) {
+	if (TheFirstStep) 
+	{
 		int ff = -1;
 		for (int i = 0; i < RANGE; ++i)
 		{
@@ -104,6 +70,7 @@ void Space::timePass(double dt)
 			if (ff != -1) break;
 		}
 		ff = abs(ff - 1);
+
 		for (int i = 0; i < RANGE; ++i)
 		{
 			for (int j = 0; j < RANGE; ++j)
@@ -136,7 +103,6 @@ void Space::timePass(double dt)
 					if (ii == que[jj])
 					{
 						++jj;
-						//cout << "Actually (" << i << ',' << j << ")->(" << (int)(*p)->x_() << ',' << (int)(*p)->y_() << ')' << endl;
 						nvec[(*p)->x_()][(*p)->y_()].push_back(*p);
 						p = nvec[i][j].erase(p);
 
@@ -157,12 +123,12 @@ void Space::timePass(double dt)
 			auto p = nvec[i][j].begin();
 			
 			int xx, yy;
+			double ax = 0, ay = 0;
 
-			while (true)
+			while (p != nvec[i][j].end())
 			{
-				if (p == nvec[i][j].end()) break;	
-				//我也不知道为什么这里一定要这样写，但只有这样才能通过
-				double ax = 0, ay = 0;
+				
+				ax = 0; ay = 0;
 				//受力不能只算邻近四个格子，还有本格和对角线格子
 				//本格
 				for (auto it : nvec[i][j])
@@ -229,16 +195,6 @@ void Space::timePass(double dt)
 			}
 		}
 	}
-
-	
-	return;
-	for (int i = 0; i < RANGE; ++i)
-	{
-	for (int j = 0; j < RANGE; ++j)
-	cout << setw(6) << nvec[i][j].size();
-	cout << endl;
-	}
-	//cout << "Total Count:" << times << " times.\n";
 }
 
 double Space::Ek() const
@@ -294,19 +250,30 @@ double Space::Eu()
 	return sum*0.5;
 }
 
-
-
-/*
-//++times;
-if (((int)(*p)->x_() != i) || ((int)(*p)->y_() != j))
+vector<int> Space::dis_x()
 {
-	//nvec[(*p)->x_()][(*p)->y_()].push_back(*p);
-	//nvec[i][j].erase(p);
-	//沃日，原来问题果然在这，迭代器不能乱变，等会试试
-
-	//cout << "No."<<(*p)->num<<" moved! (" << i << ',' << j << ")->(" << (int)(*p)->x_() << ',' << (int)(*p)->y_() << ')' << endl;
-	que.push_back(que_n);
+	vector<int> dis(501, 0);
+	for (int i = 0; i < RANGE; ++i)
+	{
+		for (int j = 0; j < RANGE; ++j)
+			for (auto it : nvec[i][j]) ++dis[(int)((it->x_()) / 0.4)];
+	}
+	return dis;
 }
-else
 
-++que_n;*/
+vector<int> Space::dis_v()
+{
+	vector<int> dis(501, 0);
+	double v;
+	for (int i = 0; i < RANGE; ++i)
+	{
+		for (int j = 0; j < RANGE; ++j)
+			for (auto it : nvec[i][j])
+			{
+				v = sqrt(it->vx_()*it->vx_() + it->vy_()*it->vy_());
+				if (v >= 5) continue;
+				++dis[int(v * 100)];
+			}
+	}
+	return dis;
+}

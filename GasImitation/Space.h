@@ -20,6 +20,9 @@ public:
 
 	double Ek() const;
 	double Eu();
+	
+	vector<int> dis_x();
+	vector<int> dis_v();
 
 private:
 	vector<vector<node>> nvec;
