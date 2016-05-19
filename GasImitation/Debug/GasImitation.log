@@ -1,6 +1,6 @@
 ﻿  Space_Version2.cpp
-f:\课程资料\计算概论-雷奕安\大作业\gasimitation\gasimitation\space_version2.cpp(51): warning C4244: “参数”: 从“double”转换到“unsigned int”，可能丢失数据
-f:\课程资料\计算概论-雷奕安\大作业\gasimitation\gasimitation\space_version2.cpp(72): warning C4244: “参数”: 从“double”转换到“unsigned int”，可能丢失数据
-f:\课程资料\计算概论-雷奕安\大作业\gasimitation\gasimitation\space_version2.cpp(214): warning C4018: “>=”: 有符号/无符号不匹配
-f:\课程资料\计算概论-雷奕安\大作业\gasimitation\gasimitation\space_version2.cpp(219): warning C4244: “参数”: 从“double”转换到“unsigned int”，可能丢失数据
+f:\课程资料\计算概论-雷奕安\大作业\gasimitation\gasimitation\space_version2.cpp(39): warning C4244: “参数”: 从“double”转换到“unsigned int”，可能丢失数据
+f:\课程资料\计算概论-雷奕安\大作业\gasimitation\gasimitation\space_version2.cpp(50): warning C4244: “参数”: 从“double”转换到“unsigned int”，可能丢失数据
+f:\课程资料\计算概论-雷奕安\大作业\gasimitation\gasimitation\space_version2.cpp(102): warning C4018: “>=”: 有符号/无符号不匹配
+f:\课程资料\计算概论-雷奕安\大作业\gasimitation\gasimitation\space_version2.cpp(106): warning C4244: “参数”: 从“double”转换到“unsigned int”，可能丢失数据
   GasImitation.vcxproj -> F:\课程资料\计算概论-雷奕安\大作业\GasImitation\Debug\GasImitation.exe
